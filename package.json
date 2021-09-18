@@ -1,0 +1,18 @@
+{
+  "name": "toy-metrics-collector",
+  "version": "0.0.0",
+  "description": "a toy metrics collector project for Daily API calls",
+  "scripts": {
+    "start": "nodemon server/index.js"
+  },
+  "author": "Wyatt Carss",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "got": "^11.8.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
