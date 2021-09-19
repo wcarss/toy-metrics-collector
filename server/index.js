@@ -3,6 +3,7 @@ const got = require("got");
 const bodyParser = require("body-parser");
 const nunjucks = require("nunjucks");
 const knexModule = require("knex");
+const knexFile = require("../knexfile");
 
 class DailyAPI {
   constructor(token) {
@@ -128,13 +129,7 @@ const setupApp = (port, token) => {
   const app = express();
   const apiRouter = express.Router({ mergeParams: true });
   const viewRouter = express.Router({ mergeParams: true });
-  const knex = knexModule({
-    client: "sqlite3",
-    connection: {
-      filename: "./db/metrics.sqlite",
-    },
-    useNullAsDefault: true,
-  });
+  const knex = knexModule(knexFile.development);
   const metricsStorage = new MetricsStorage(knex);
 
   if (!token) {
