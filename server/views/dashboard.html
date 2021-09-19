@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script type="text/javascript" src="/js/dashboard.js">
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Calls Dashboard</h1>
+<button id="createRoom">Create Room</button>
+<table>
+  <thead>
+    <td>call id</td>
+    <td>call name</td>
+    <td>join call link</td>
+    <td>call metrics</td>
+    <td></td>
+  </thead>
+  {% for room in rooms %}
+  <tr>
+    <td>{{ room.id }}</td>
+    <td>{{ room.name }}</td>
+    <td><a href="/calls/{{ room.name }}">join</a></td>
+    <td><a href="/metrics/{{ room.name }}">metrics</a></td>
+    <td><button class="deleteRoom" id="js-delete-{{ room.name }}">delete</button></td>
+  </tr>
+  {% else %}
+  <tr>
+    no calls to display!
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

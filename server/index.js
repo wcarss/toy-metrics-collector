@@ -1,6 +1,7 @@
 const express = require("express");
 const got = require("got");
 const bodyParser = require("body-parser");
+const nunjucks = require("nunjucks");
 
 class DailyAPI {
   constructor(token) {
@@ -35,8 +36,9 @@ class DailyAPI {
     return this.call("GET", `/rooms/${id}`);
   }
 
-  getRooms(query) {
-    return this.call("GET", `/rooms`, { query });
+  async getRooms(query) {
+    const roomsResponse = await this.call("GET", `/rooms`, { query });
+    return roomsResponse.data;
   }
 
   createRoom(body) {
@@ -56,9 +58,57 @@ class DailyAPI {
   }
 }
 
+class HTTPError extends Error {
+  constructor(errorObj = {}) {
+    super(errorObj.message || "error");
+    this.message = errorObj.message || "error";
+    this.statusCode = errorObj.statusCode || 500;
+  }
+}
+
+class MetricsStorage {
+  constructor() {
+    this.store = {};
+  }
+
+  validate(metrics) {
+    const requiredFields = [
+      "session_id",
+      "send_bps",
+      "recv_bps",
+      "send_packet_loss",
+      "recv_packet_loss",
+    ];
+    for (const requiredField of requiredFields) {
+      if (!metrics.hasOwnProperty(requiredField)) {
+        throw new HTTPError({
+          statusCode: 400,
+          message: `metrics missing required field: ${requiredField}`,
+        });
+      }
+    }
+  }
+
+  create(metrics) {
+    this.validate(metrics);
+    const session = metrics.session_id;
+    const room = metrics.room_name;
+    if (!this.store[room]) {
+      this.store[room] = [];
+    }
+    this.store[room].push(metrics);
+  }
+
+  get(roomName) {
+    return this.store[roomName];
+  }
+}
+
 const setupApp = (port, token) => {
   const app = express();
   const apiRouter = express.Router({ mergeParams: true });
+  const viewRouter = express.Router({ mergeParams: true });
+  const metricsStorage = new MetricsStorage();
 
   if (!token) {
     // not exiting app because you might *want* to run with no key for some reason
@@ -92,9 +142,48 @@ const setupApp = (port, token) => {
     res.send(room);
   });
 
-  app.use(express.static("client"));
+  apiRouter.get("/metrics/:room_name", async (req, res, next) => {
+    const metrics = metricsStorage.get(req.params.room_name);
+    res.send(metrics);
+  });
+
+  apiRouter.post("/metrics/", async (req, res, next) => {
+    metricsStorage.create(req.body);
+    res.send();
+  });
+
+  viewRouter.get("/", async (req, res) => {
+    const rooms = await dailyAPI.getRooms();
+    res.render("dashboard.html", { rooms });
+  });
+
+  viewRouter.get("/calls/:call_name", async (req, res) => {
+    const room = await dailyAPI.getRoom(req.params.call_name);
+    res.render("call.html", { room });
+  });
+
+  viewRouter.get("/metrics/:call_name", async (req, res) => {
+    const room = await dailyAPI.getRoom(req.params.call_name);
+    const metrics = metricsStorage.get(req.params.call_name);
+    res.render("metrics.html", { room, metrics });
+  });
+
+  nunjucks.configure("server/views", {
+    autoescape: true,
+    express: app,
+    watch: true,
+  });
+
   app.use(bodyParser.json());
   app.use("/api", apiRouter);
+  app.use(viewRouter);
+  app.use(express.static("server/static"));
+  app.use((err, req, res, next) => {
+    res.header("Content-Type", "application/json");
+    res
+      .status(err.statusCode || 500)
+      .json({ statusCode: err.statusCode, message: err.message });
+  });
   app.listen(port, () => {
     console.log(`toy metrics collector listening on port ${port}`);
   });

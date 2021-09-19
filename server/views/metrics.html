@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.18.2"></script>
+<script type="text/javascript" src="/js/metrics.js"></script>
+{% endblock %}
+
+{% block content %}
+  <h1>Metrics for room {{ room.name }}</h1>
+  <div id="vis"></div>
+    <table>
+      <thead>
+        <td>timestamp</td>
+        <td>participant</td>
+        <td>send kbps</td>
+        <td>rec kbps</td>
+        <td>send loss</td>
+        <td>recv loss</td>
+      </thead>
+  {% for dataPoint in metrics %}
+      <tr>
+        <td>{{ dataPoint.timestamp }}</td>
+        <td>{{ dataPoint.session_id }}</td>
+        <td>{{ dataPoint.send_bps/1000 }}</td>
+        <td>{{ dataPoint.recv_bps/1000 }}</td>
+        <td>{{ dataPoint.send_packet_loss*100 }}%</td>
+        <td>{{ dataPoint.recv_packet_loss*100 }}%</td>
+      </tr>
+  {% else %}
+      <tr>
+        <td>no data stored!</td>
+      </tr>
+  {% endfor %}
+    </table>
+  <a href="/">dashboard</a>
+  <input id="room_name" type="hidden" value={{ room.name }}>
+{% endblock %}

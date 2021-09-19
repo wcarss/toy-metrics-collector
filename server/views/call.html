@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block script %}
+<script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
+<script type="text/javascript" src="/js/call.js"></script>
+<style>
+  #daily_holder {
+    width: 800px;
+    height: 540px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <h1>Room {{ room.name }}</h1>
+  <div id="daily_holder"></div>
+  <input id="room_url" type="hidden" value={{ room.url }}>
+  <a href="/">dashboard</a>
+{% endblock %}
