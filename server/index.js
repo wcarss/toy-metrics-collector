@@ -2,6 +2,7 @@ const express = require("express");
 const got = require("got");
 const bodyParser = require("body-parser");
 const nunjucks = require("nunjucks");
+const knexModule = require("knex");
 
 class DailyAPI {
   constructor(token) {
@@ -67,18 +68,22 @@ class HTTPError extends Error {
 }
 
 class MetricsStorage {
-  constructor() {
+  constructor(knex) {
     this.store = {};
+    this.knex = knex;
   }
 
   validate(metrics) {
     const requiredFields = [
+      "room_name",
+      "timestamp",
       "session_id",
       "send_bps",
       "recv_bps",
       "send_packet_loss",
       "recv_packet_loss",
     ];
+    const safeMetrics = {};
     for (const requiredField of requiredFields) {
       if (!metrics.hasOwnProperty(requiredField)) {
         throw new HTTPError({
@@ -86,21 +91,36 @@ class MetricsStorage {
           message: `metrics missing required field: ${requiredField}`,
         });
       }
+      safeMetrics[requiredField] = metrics[requiredField];
     }
+
+    return safeMetrics;
   }
 
   create(metrics) {
-    this.validate(metrics);
-    const session = metrics.session_id;
-    const room = metrics.room_name;
-    if (!this.store[room]) {
-      this.store[room] = [];
-    }
-    this.store[room].push(metrics);
+    const safeMetrics = this.validate(metrics);
+    return this.knex("metrics").insert(safeMetrics);
   }
 
-  get(roomName) {
-    return this.store[roomName];
+  delete(query) {
+    if (!query) {
+      throw new HTTPError({
+        statusCode: 400,
+        message: `for safety, delete requires a query`,
+      });
+    }
+    return this.knex("metrics").where(query).del();
+  }
+
+  get(query, order = [{ column: "timestamp", order: "asc" }]) {
+    let result = this.knex("metrics").select();
+    if (query) {
+      result = result.where(query);
+    }
+    if (order) {
+      result = result.orderBy(order);
+    }
+    return result;
   }
 }
 
@@ -108,7 +128,14 @@ const setupApp = (port, token) => {
   const app = express();
   const apiRouter = express.Router({ mergeParams: true });
   const viewRouter = express.Router({ mergeParams: true });
-  const metricsStorage = new MetricsStorage();
+  const knex = knexModule({
+    client: "sqlite3",
+    connection: {
+      filename: "./db/metrics.sqlite",
+    },
+    useNullAsDefault: true,
+  });
+  const metricsStorage = new MetricsStorage(knex);
 
   if (!token) {
     // not exiting app because you might *want* to run with no key for some reason
@@ -139,16 +166,29 @@ const setupApp = (port, token) => {
 
   apiRouter.delete("/rooms/:room_name", async (req, res, next) => {
     const room = await dailyAPI.deleteRoom(req.params.room_name);
+    // clear out any metrics we stored for that room
+    const metrics = await metricsStorage.delete({
+      room_name: req.params.room_name,
+    });
     res.send(room);
   });
 
   apiRouter.get("/metrics/:room_name", async (req, res, next) => {
-    const metrics = metricsStorage.get(req.params.room_name);
+    const metrics = await metricsStorage.get({
+      room_name: req.params.room_name,
+    });
     res.send(metrics);
   });
 
-  apiRouter.post("/metrics/", async (req, res, next) => {
-    metricsStorage.create(req.body);
+  apiRouter.post("/metrics", async (req, res, next) => {
+    await metricsStorage.create(req.body);
+    res.send();
+  });
+
+  apiRouter.delete("/metrics/:room_name", async (req, res, next) => {
+    await metricsStorage.delete({
+      room_name: req.params.room_name,
+    });
     res.send();
   });
 
@@ -157,14 +197,19 @@ const setupApp = (port, token) => {
     res.render("dashboard.html", { rooms });
   });
 
-  viewRouter.get("/calls/:call_name", async (req, res) => {
-    const room = await dailyAPI.getRoom(req.params.call_name);
+  viewRouter.get("/calls/:room_name", async (req, res) => {
+    const room = await dailyAPI.getRoom(req.params.room_name);
     res.render("call.html", { room });
   });
 
-  viewRouter.get("/metrics/:call_name", async (req, res) => {
-    const room = await dailyAPI.getRoom(req.params.call_name);
-    const metrics = metricsStorage.get(req.params.call_name);
+  viewRouter.get("/metrics/:room_name", async (req, res) => {
+    const room = await dailyAPI.getRoom(req.params.room_name);
+    const metrics = await metricsStorage.get(
+      {
+        room_name: req.params.room_name,
+      },
+      ["room_name", "session_id", "timestamp"]
+    );
     res.render("metrics.html", { room, metrics });
   });
 
