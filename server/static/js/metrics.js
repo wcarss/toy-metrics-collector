@@ -5,7 +5,7 @@ window.onload = async () => {
   const vegaSpec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     description: "call quality data",
-    // awful dynamic with hack for now
+    // awful dynamic width hack for now
     width: window.innerWidth * 0.4,
     data: { values: metrics },
     repeat: {
@@ -14,6 +14,7 @@ window.onload = async () => {
     spec: {
       mark: {
         type: "line",
+        tooltip: { content: "data" },
       },
       transform: [
         { calculate: "datum.send_bps/1000", as: "send_kbps" },

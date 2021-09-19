@@ -5,10 +5,10 @@ const captureMetrics = (callFrame, roomName, participantId) => {
       room_name: roomName,
       session_id: participantId,
       timestamp: metrics.stats.latest.timestamp,
-      send_bps: metrics.stats.latest.videoSendBitsPerSecond,
-      recv_bps: metrics.stats.latest.videoRecvBitsPerSecond,
-      send_packet_loss: metrics.stats.latest.videoSendPacketLoss,
-      recv_packet_loss: metrics.stats.latest.videoRecvPacketLoss,
+      send_bps: metrics.stats.latest.videoSendBitsPerSecond.toFixed(2),
+      recv_bps: metrics.stats.latest.videoRecvBitsPerSecond.toFixed(2),
+      send_packet_loss: metrics.stats.latest.videoSendPacketLoss.toFixed(3),
+      recv_packet_loss: metrics.stats.latest.videoRecvPacketLoss.toFixed(3),
     };
     fetch("/api/metrics", {
       method: "POST",

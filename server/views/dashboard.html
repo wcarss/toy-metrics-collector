@@ -10,24 +10,28 @@
 <button id="createRoom">Create Room</button>
 <table>
   <thead>
-    <td>call id</td>
-    <td>call name</td>
-    <td>join call link</td>
-    <td>call metrics</td>
-    <td></td>
+    <th>call name</th>
+    <th>join call link</th>
+    <th>call metrics</th>
+    <th></th>
   </thead>
   {% for room in rooms %}
-  <tr>
-    <td>{{ room.id }}</td>
-    <td>{{ room.name }}</td>
-    <td><a href="/calls/{{ room.name }}">join</a></td>
-    <td><a href="/metrics/{{ room.name }}">metrics</a></td>
-    <td><button class="deleteRoom" id="js-delete-{{ room.name }}">delete</button></td>
-  </tr>
+  <tbody>
+    <tr>
+      <td>{{ room.name }}</td>
+      <td><a href="/calls/{{ room.name }}">join</a></td>
+      <td><a href="/metrics/{{ room.name }}">metrics</a></td>
+      <td><button class="deleteRoom" id="js-delete-{{ room.name }}">delete</button></td>
+    </tr>
+  </tbody>
   {% else %}
-  <tr>
-    no calls to display!
-  </tr>
+  <tbody>
+    <tr>
+      <td colspan=5 style="text-align: center;">
+        no calls to display!
+      </td>
+    </tr>
+  </tbody>
   {% endfor %}
 </table>
 {% endblock %}

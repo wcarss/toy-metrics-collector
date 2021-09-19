@@ -144,6 +144,13 @@ const setupApp = (port, token) => {
 
   const dailyAPI = new DailyAPI(token);
 
+  const nunjucksEnv = nunjucks.configure("server/views", {
+    autoescape: true,
+    express: app,
+    watch: true,
+  });
+  nunjucksEnv.addFilter("fixed", (num, length) => num.toFixed(2 || length));
+
   apiRouter.get("/rooms/:room_name", async (req, res, next) => {
     const room = await dailyAPI.getRoom(req.params.room_name);
     res.send(room);
@@ -211,12 +218,6 @@ const setupApp = (port, token) => {
       ["room_name", "session_id", "timestamp"]
     );
     res.render("metrics.html", { room, metrics });
-  });
-
-  nunjucks.configure("server/views", {
-    autoescape: true,
-    express: app,
-    watch: true,
   });
 
   app.use(bodyParser.json());

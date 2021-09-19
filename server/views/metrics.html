@@ -12,28 +12,32 @@
   <div id="vis"></div>
     <table>
       <thead>
-        <td>timestamp</td>
-        <td>participant</td>
-        <td>send kbps</td>
-        <td>rec kbps</td>
-        <td>send loss</td>
-        <td>recv loss</td>
+        <th>timestamp</th>
+        <th>participant</th>
+        <th>send kbps</th>
+        <th>rec kbps</th>
+        <th>send loss</th>
+        <th>recv loss</th>
       </thead>
   {% for dataPoint in metrics %}
-      <tr>
-        <td>{{ dataPoint.timestamp }}</td>
-        <td>{{ dataPoint.session_id }}</td>
-        <td>{{ dataPoint.send_bps/1000 }}</td>
-        <td>{{ dataPoint.recv_bps/1000 }}</td>
-        <td>{{ dataPoint.send_packet_loss*100 }}%</td>
-        <td>{{ dataPoint.recv_packet_loss*100 }}%</td>
-      </tr>
+      <tbody>
+        <tr>
+          <td>{{ dataPoint.timestamp }}</td>
+          <td>{{ dataPoint.session_id }}</td>
+          <td>{{ (dataPoint.send_bps / 1000) | fixed }}</td>
+          <td>{{ (dataPoint.recv_bps / 1000) | fixed }}</td>
+          <td>{{ (dataPoint.send_packet_loss * 100) | fixed }}%</td>
+          <td>{{ (dataPoint.recv_packet_loss * 100) | fixed }}%</td>
+        </tr>
+      </tbody>
   {% else %}
-      <tr>
-        <td>no data stored!</td>
-      </tr>
+      <tbody>
+        <tr>
+          <td colspan=6 style="text-align: center;">no data stored!</td>
+        </tr>
+      </tbody>
   {% endfor %}
     </table>
-  <a href="/">dashboard</a>
+  <p><a href="/">return to dashboard</a></p>
   <input id="room_name" type="hidden" value={{ room.name }}>
 {% endblock %}
