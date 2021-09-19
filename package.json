@@ -4,8 +4,8 @@
   "description": "a toy metrics collector project for Daily API calls",
   "scripts": {
     "setup": "knex migrate:latest",
-    "start": "nodemon server/index.js",
-    "production": "node server/index.js"
+    "start": "nodemon src/index.js",
+    "production": "node src/index.js"
   },
   "author": "Wyatt Carss",
   "license": "ISC",
