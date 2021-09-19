@@ -2,16 +2,27 @@
 
 This project is a web app that interfaces with the Daily video API to create call rooms and store metadata about the quality of the calls. It generates a dashboard of all of the calls that have taken place, and graphically displays the metadata for any chosen call from the dashboard.
 
+## Screenshots
+
+metrics page:
+
+![metrics](metrics_page.png)
+
+dashboard:
+
+<img src="dashboard_page.png" width=500>
+
 ## How to run this project locally
 
-To run this project, you must have nodejs (~v14+) and a package manager for nodejs like npm or yarn installed. You will also need a Daily account and an API key from them, stored in an environment variable named `DAILY_API_KEY` in the context where the process runs.
+To run this project, you must have [nodejs](https://nodejs.org/en/) (~v14+) and a package manager for nodejs like [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) installed. You also need to have the database program [sqlite3](https://www.sqlite.org/index.html) installed. You will also need a [Daily](https://www.daily.co/) account and an API key from them, stored in an environment variable named `DAILY_API_KEY` in the context where the process runs.
 
-Once you have a Daily API key in your environment and hav nodejs+npm installed, you can install and run this server by cloning this repository, installing the nodejs dependencies, and finally invoking the server command. The following commands accomplish all that:
+Once you have a Daily API key in your environment and hav nodejs+npm installed, you can install and run this server by cloning this repository, installing the nodejs dependencies, setting up the database, and finally invoking the server command. The following commands accomplish all that:
 
 ```javascripts
 git clone https://github.com/wcarss/toy-metrics-collector.git
 cd toy-metrics-collector.git
 npm install
+npm run setup
 npm start
 ```
 
