@@ -41,7 +41,7 @@ class DailyAPI {
   // (async or not shouldn't make any difference to the caller here)
   async getRooms(query) {
     const roomsResponse = await this.call("GET", `/rooms`, { query });
-    return roomsResponse.data;
+    return roomsResponse && roomsResponse.data;
   }
 
   createRoom(body) {

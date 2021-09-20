@@ -1,5 +1,5 @@
 window.onload = async () => {
-  const roomName = document.getElementById("room_name").value;
+  const roomName = document.getElementById("roomName").value;
   const metricsResponse = await fetch(`/api/metrics/${roomName}`);
   const metrics = await metricsResponse.json();
   const vegaSpec = {

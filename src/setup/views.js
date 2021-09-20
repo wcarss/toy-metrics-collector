@@ -35,7 +35,7 @@ const setupViews = (app) => {
       },
       ["room_name", "session_id", "timestamp"]
     );
-    res.render("metrics.html", { room, metrics });
+    res.render("metrics.html", { roomName: req.params.room_name, metrics });
   });
 
   return viewRouter;

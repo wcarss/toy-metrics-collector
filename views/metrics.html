@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Metrics for room {{ room.name }}</h1>
+  <h1>Metrics for room {{ roomName }}</h1>
   <div id="vis"></div>
     <table>
       <thead>
@@ -39,5 +39,5 @@
   {% endfor %}
     </table>
   <p><a href="/">return to dashboard</a></p>
-  <input id="room_name" type="hidden" value={{ room.name }}>
+  <input id="roomName" type="hidden" value={{ roomName }}>
 {% endblock %}
