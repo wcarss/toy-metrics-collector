@@ -5,7 +5,9 @@
   "scripts": {
     "setup": "knex migrate:latest",
     "start": "nodemon src/index.js",
-    "production": "node src/index.js"
+    "migrate_start": "knex migrate:latest && nodemon src/index.js",
+    "production": "node src/index.js",
+    "migrate_start_production": "knex migrate:latest && node src/index.js"
   },
   "author": "Wyatt Carss",
   "license": "ISC",

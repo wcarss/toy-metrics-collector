@@ -1,0 +1,12 @@
+FROM node:14
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN apt-get update
+RUN apt-get install -y sqlite3
+RUN npm install
+
+EXPOSE 35813
+CMD [ "npm", "run", "migrate_start" ]
