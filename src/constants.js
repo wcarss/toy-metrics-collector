@@ -1,4 +1,3 @@
 module.exports = {
-  DELETE_VALIDATION: "delete.validation",
-  CREATE_VALIDATION: "create.validation",
+  DAILY_HOST: "https://api.daily.co",
 };

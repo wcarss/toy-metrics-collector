@@ -1,4 +1,5 @@
 const got = require("got");
+const { DAILY_HOST } = require("../constants");
 
 class DailyAPI {
   constructor(token) {
@@ -7,7 +8,7 @@ class DailyAPI {
       console.warn("no daily api key provided! all DailyAPI calls will fail.");
     }
     this.token = token;
-    this.dailyHost = "https://api.daily.co/v1";
+    this.dailyHost = `${DAILY_HOST}/v1`;
   }
 
   async call(method, path, requestData) {

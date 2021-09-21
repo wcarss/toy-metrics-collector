@@ -33,19 +33,25 @@ const setupApp = (port, dailyToken) => {
   return app;
 };
 
-// in theory we could parameterize the application to have different
-// startup modes, e.g. with/without docs, different db adapters, etc.
-const port = process.env.TOY_METRICS_PORT || 35813; // for fun, a fibonacci port
-const dailyToken = process.env.DAILY_API_KEY;
-const app = setupApp(port, dailyToken);
+if (require.main === module) {
+  // in theory we could parameterize the application to have different
+  // startup modes, e.g. with/without docs, different db adapters, etc.
+  const port = process.env.TOY_METRICS_PORT || 35813; // for fun, a fibonacci port
+  const dailyToken = process.env.DAILY_API_KEY;
+  const app = setupApp(port, dailyToken);
 
-app.listen(port, () => {
-  console.log(`toy metrics collector listening on port ${app.config.port}`);
-});
+  app.listen(port, () => {
+    console.log(`toy metrics collector listening on port ${app.config.port}`);
+  });
 
-// if any promise rejections get lost in asynchrony, we'd rather they not crash the app
-process.on("unhandledRejection", (reason) =>
-  console.error(
-    `Unhandled Rejection at: ${reason && reason.stack ? reason.stack : reason}`
-  )
-);
+  // if any promise rejections get lost in asynchrony, we'd rather they not crash the app
+  process.on("unhandledRejection", (reason) =>
+    console.error(
+      `Unhandled Rejection at: ${
+        reason && reason.stack ? reason.stack : reason
+      }`
+    )
+  );
+}
+
+module.exports = { setupApp };

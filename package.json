@@ -7,7 +7,8 @@
     "start": "nodemon src/index.js",
     "migrate_start": "knex migrate:latest && nodemon src/index.js",
     "production": "node src/index.js",
-    "migrate_start_production": "knex migrate:latest && node src/index.js"
+    "migrate_start_production": "knex migrate:latest && node src/index.js",
+    "test": "mocha test --exit"
   },
   "author": "Wyatt Carss",
   "license": "ISC",
@@ -16,6 +17,9 @@
     "express": "^5.0.0-alpha.8",
     "got": "^11.8.2",
     "knex": "^0.95.11",
+    "mocha": "^9.1.1",
+    "mock-knex": "^0.4.10",
+    "nock": "^13.1.3",
     "nunjucks": "^3.2.3",
     "sqlite3": "^5.0.2"
   },

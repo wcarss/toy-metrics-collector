@@ -9,6 +9,8 @@ const setupDatabase = (app) => {
   // which is much better than require('db') sprinkled liberally, and
   // the connection-management headaches that can often bring + cause
   app.db = knex;
+
+  return app.db;
 };
 
 module.exports = setupDatabase;
