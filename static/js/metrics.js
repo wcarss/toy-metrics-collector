@@ -44,5 +44,6 @@ window.onload = async () => {
     },
   };
 
+  // eslint-disable-next-line no-undef
   vegaEmbed("#vis", vegaSpec);
 };
