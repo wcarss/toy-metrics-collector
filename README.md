@@ -31,11 +31,11 @@ Here's what this project looks like when it's running!
 
 ### metrics page
 
-![metrics](metrics_page.png)
+![metrics](screenshots/metrics_page.png)
 
 ### dashboard
 
-<img src="dashboard_page.png" width=500>
+<img src="screenshots/dashboard_page.png" width=500>
 
 ## How to run this project locally
 
