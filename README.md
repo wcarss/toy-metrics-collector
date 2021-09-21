@@ -22,6 +22,7 @@ Then visit http://localhost:35813 -- voila!
 - [Running with Docker](#running-with-docker)
 - [Running directly using nodejs](#running-directly-using-nodejs)
 - [The Database](#the-database)
+- [Running tests](#running-tests)
 - [Troubleshooting](#troubleshooting)
 
 ## Screenshots
@@ -76,31 +77,35 @@ apt-get install docker.io
 
 Which you may have to run using sudo to have permission. For MacOS or Windows, you should likely use the instructions found on the [Docker website](https://www.docker.com/), which may require you to make an account, which might be a reason to try an alternative container runtime like [podman](https://podman.io/). For other linux distributions, you should look up instructions specific to them, which are definitely out there.
 
-Once you have docker installed, you can build a toy-metrics-collector image using this command, from inside of the toy-metrics-collector directory:
+Once you have docker installed, you can build and run the toy-metrics-collector by using the two included convenience scripts from inside of the toy-metrics-collector directory:
+
+```
+./docker-build
+./docker-run
+```
+
+The build script just runs this command:
 
 ```
 docker build -t toy-metrics-collector -f Dockerfile.development  .
 ```
 
-Note that `docker build` requires a connection to the internet, and can use a lot of data. Once it completes, you will have an image tagged as 'toy-metrics-collector', which you can run with this command, also executed from within the toy-metrics-collector directory:
+Note that `docker build` requires a connection to the internet, and can use a lot of data. Once it completes, you will have an image tagged as 'toy-metrics-collector'.
+
+Once you have an image built, you can run it this command, which is inside the `docker-run` script. It should also be executed from within the toy-metrics-collector directory:
 
 ```
-docker run -p 3030:35813 -e DAILY_API_KEY -v "$(pwd)/db":/usr/src/app/db toy-metrics-collector
+docker run -d -p 35813:35813 -e DAILY_API_KEY -v "$(pwd)/db":/usr/src/app/db toy-metrics-collector
 ```
 
 That command has a few parts:
 
-- `-p 3030:35813` is connecting the port `35813` inside of the docker container to your host's port `3030`, allowing you to visit `http://localhost:3030` on your host and communicate with the toy-metrics-collector service running on port `35813` inside of the container.
+- `-d` runs the image detached in the background, so you can close your terminal and it stays running.
+- `-p 35813:35813` (host:container) is connecting the port `35813` inside of the docker container to your host's own port `35813`, allowing you to visit `http://localhost:35813` on your host and communicate with the toy-metrics-collector service running on port `35813` inside of the container.
 - `-e DAILY_API_KEY` is passing the environment variable `DAILY_API_KEY` into the docker container. Recall from above: you need to have an API key from the Daily video API for this project to run correctly, and you should set a variable in your terminal environment named `DAILY_API_KEY` to hold it.
 - `-v "${pwd}/db":/usr/src/app/db wcarss/` is mounting a volume from your host into the container, to allow data added to the database while the container is running to persist after the container has stopped. This part of the command is why you should execute the command from within the toy-metrics-collector directory: toy-metrics-collector/db is where the project's configuration expects the sqlite database to be stored. If you know what you're doing, you could put a database elsewhere and run this command from there, or change the path accordingly.
 
-That command runs the image in the foreground in your terminal, so you can monitor the logs directly. If you would like the image to be run by docker in the background and to stay running after you close the terminal (e.g. if you have ssh'd into a computer to run the container), you can add the `-d` flag to the command, like this:
-
-```
-docker run -d -p 3030:35813 -e DAILY_API_KEY -v "$(pwd)/db":/usr/src/app/db toy-metrics-collector
-```
-
-If successful, you should see something like this:
+You can view the logs with `docker logs <image name>`. If successful, you should see something like this:
 
 ```
 > toy-metrics-collector@0.0.0 start> toy-metrics-collector@0.0.0 migrate_start /usr/src/app
@@ -116,11 +121,11 @@ Already up to date
 toy metrics collector listening on port 35813
 ```
 
-If you see the above, it means your server is running! You can now visit http://localhost:3030 (**note that it's port 3030, not 35813!**) in a web browser on your computer to see the toy metrics dashboard, create calls, and view call metrics.
+That means your server is running! You can now visit http://localhost:35813 in a web browser on your computer to see the toy metrics dashboard, create calls, and view call metrics.
 
 #### Docker Command Administrivia
 
-If you're running the container in the background using `-d`, you might want to know about the following commands:
+You might want to know about the following commands:
 
 - `docker ps` will show you the list of docker images that are running, and the name of this running container, something like `a8302f951946`
 - `docker logs <container name>` will show you the logs that would be printed to the foreground if you had not run the container using `-d`
@@ -183,6 +188,10 @@ npm run setup
 ```
 
 Then you can run the server as normal with `npm start`.
+
+## Running tests
+
+You can run the tests with `npm test`.
 
 ## Troubleshooting
 

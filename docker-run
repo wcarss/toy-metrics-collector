@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+docker run -d -p 35813:35813 -e DAILY_API_KEY -v "$(pwd)/db":/usr/src/app/db toy-metrics-collector
+
