@@ -2,11 +2,10 @@ const { HTTPError } = require("../utils/errors");
 
 class MetricsStorage {
   constructor(knex) {
-    this.store = {};
     this.knex = knex;
   }
 
-  validate(metrics) {
+  _validate(metrics) {
     const requiredFields = [
       "room_name",
       "timestamp",
@@ -32,7 +31,7 @@ class MetricsStorage {
   }
 
   create(metrics) {
-    const safeMetrics = this.validate(metrics);
+    const safeMetrics = this._validate(metrics);
     return this.knex("metrics").insert(safeMetrics);
   }
 
