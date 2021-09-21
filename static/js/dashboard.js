@@ -5,6 +5,7 @@ window.onload = () => {
     fetch("/api/rooms", { method: "POST" }).then(reload);
   };
 
+  // every deletion button needs its own action handler
   const registerDeleteRoom = (deleteRoomElement) => {
     const roomName = deleteRoomElement.id.split("-")[2];
     const deleteRoom = () => {

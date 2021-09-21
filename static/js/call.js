@@ -26,11 +26,13 @@ window.onload = async () => {
   // daily.js is already loaded from call.html
   const dailyElement = document.getElementById("daily_holder");
   const roomURLElement = document.getElementById("room_url");
+  // hacky way of passing the room-url value from the template:
   const roomURL = roomURLElement.value;
   const callFrame = await window.DailyIframe.createFrame(dailyElement);
   await callFrame.join({ url: roomURL });
   const participantId = await callFrame.participants().local.session_id;
   const room = await callFrame.room();
 
+  // read+send the metrics every 15 seconds:
   setInterval(captureMetrics(callFrame, room.name, participantId), metricsRate);
 };

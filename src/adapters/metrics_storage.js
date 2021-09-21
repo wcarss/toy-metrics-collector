@@ -6,6 +6,7 @@ class MetricsStorage {
   }
 
   _validate(metrics) {
+    // this method would be better off handled by a schema tied to the db
     const requiredFields = [
       "room_name",
       "timestamp",
@@ -19,6 +20,8 @@ class MetricsStorage {
 
     for (const requiredField of requiredFields) {
       if (!metrics.hasOwnProperty(requiredField)) {
+        // I also should not really throw HTTP errors from inside a DB adapter,
+        // but this is the only error class I have!
         throw new HTTPError({
           statusCode: 400,
           message: `metrics missing required field: ${requiredField}`,

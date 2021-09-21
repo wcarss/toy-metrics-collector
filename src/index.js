@@ -33,6 +33,7 @@ const setupApp = (port, dailyToken) => {
   return app;
 };
 
+// i.e., "only if we invoke index.js directly:"
 if (require.main === module) {
   // in theory we could parameterize the application to have different
   // startup modes, e.g. with/without docs, different db adapters, etc.
@@ -54,4 +55,5 @@ if (require.main === module) {
   );
 }
 
+// we export setupApp just for tests to be able to make their own instances
 module.exports = { setupApp };
