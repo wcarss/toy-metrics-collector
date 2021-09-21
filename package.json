@@ -1,6 +1,6 @@
 {
   "name": "toy-metrics-collector",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "a toy metrics collector project for Daily API calls",
   "scripts": {
     "setup": "knex migrate:latest",
