@@ -1,8 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const setupDatabase = require("./setup/database");
-const setupApi = require("./setup/api");
-const setupViews = require("./setup/views");
+const setupApi = require("./routes/api");
+const setupViews = require("./routes/views");
 const { errorHandler } = require("./middleware");
 
 const setupApp = (port, dailyToken) => {
